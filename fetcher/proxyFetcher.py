@@ -214,11 +214,29 @@ class ProxyFetcher(object):
     #         proxies = re.findall(r'<td>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})</td>[\s\S]*?<td>(\d+)</td>', r.text)
     #         for proxy in proxies:
     #             yield ':'.join(proxy)
+    """
+https://www.proxy-list.download/api/v1/get?type=socks4
+socks4,socks5,http,https
+http://free-proxy.cz/zh/
+socks4,socks5,http,https
+https://spys.one/en/
+socks4,socks5,http,https
+https://premproxy.com/socks-list/
+socks4,socks5
+https://api.proxyscrape.com/?request=displayproxies&proxytype=all
+socks4,socks5,http,https
+https://www.proxyscan.io/download?type=socks4
+socks4,socks5,http,https
+http://www.proxylists.net
+https://free-proxy-list.net/anonymous-proxy.html
+https://www.proxynova.com/proxy-server-list/
+http://free-proxy.cz/en/proxylist
+https://www.zdaye.com/dayProxy.html
+# http://nntime.com/proxy-list-01.htm
+    """
 
 
 if __name__ == '__main__':
     p = ProxyFetcher()
     for _ in p.freeProxy11():
         print(_)
-
-# http://nntime.com/proxy-list-01.htm
