@@ -14,6 +14,7 @@ __author__ = 'JHao'
 
 import re
 from time import sleep
+from setting import PROXIES
 
 from util.webRequest import WebRequest
 
@@ -214,29 +215,68 @@ class ProxyFetcher(object):
     #         proxies = re.findall(r'<td>(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})</td>[\s\S]*?<td>(\d+)</td>', r.text)
     #         for proxy in proxies:
     #             yield ':'.join(proxy)
+
+    @staticmethod
+    def proxyDBNet():
+        urls = [
+            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=CN',
+            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=',
+            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=SG',
+            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=US',
+            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=CZ',
+            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=AR',
+        ]
+        request = WebRequest()
+
+        for url in urls:
+            r = request.get(url, timeout=20)
+            proxies = re.findall(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+)', r.text)
+            for proxy in proxies:
+                yield proxy
+
+    @staticmethod
+    def zdayeCom():
+        urls = 'https://www.zdaye.com/dayProxy.html'
+        request = WebRequest()
+        detail_url = 'https://www.zdaye.com' + request.get(urls, timeout=10).tree.xpath('//h3[@class="thread_title"]//a/@href')[0]
+
+        proxy_list = request.get(detail_url, timeout=10).tree.xpath('//a[contains(@href,"/ip/CheckHttp/")]/@href')
+        for url in proxy_list:
+            proxy = re.findall(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+)',url)
+            if proxy:
+                yield proxy[0]
+
+    # @staticmethod
+    # def freeproxyCz():
+    #     url = "https://spys.one/free-proxy-list/CN/"
+    #     request = WebRequest()
+    #     r = request.get(url, timeout=10, proxies=PROXIES)
+    #     print( r.text)
+    #     proxies = re.findall(r"document\.write\(Base64\.decode\(\"(.*?)\"\).*?\"fport\".*?>(.*?)<", r.text)
+    #     for proxy in proxies:
+    #         yield proxy
+    #         # yield base64.b64decode(proxy).decode()
+
+    @staticmethod
+    def proxynovaCom():
+        url = "https://www.proxynova.com/proxy-server-list/country-cn"
+        request = WebRequest()
+        r = request.get(url, timeout=10, proxies=PROXIES)
+        proxies = re.findall(r"document\.write\(\"(.*?)\"\).*?\".*?>(\d+)</", r.text.replace("\n", "").replace(" ", ""))
+        for proxy in proxies:
+            yield re.sub(r'[\"\+]', '', proxy[0]) + ":" + proxy[1]
+
+
     """
-https://www.proxy-list.download/api/v1/get?type=socks4
-socks4,socks5,http,https
-http://free-proxy.cz/zh/
-socks4,socks5,http,https
-https://spys.one/en/
-socks4,socks5,http,https
-https://premproxy.com/socks-list/
-socks4,socks5
-https://api.proxyscrape.com/?request=displayproxies&proxytype=all
-socks4,socks5,http,https
-https://www.proxyscan.io/download?type=socks4
-socks4,socks5,http,https
-http://www.proxylists.net
-https://free-proxy-list.net/anonymous-proxy.html
-https://www.proxynova.com/proxy-server-list/
-http://free-proxy.cz/en/proxylist
-https://www.zdaye.com/dayProxy.html
-# http://nntime.com/proxy-list-01.htm
+# 需要翻墙
+# http://free-proxy.cz/zh/
+# https://free-proxy-list.net/anonymous-proxy.html
+# http://free-proxy.cz/en/proxylist/country/CN/all/ping/all
+# https://spys.one/free-proxy-list/CN/
     """
 
 
 if __name__ == '__main__':
     p = ProxyFetcher()
-    for _ in p.freeProxy11():
+    for _ in p.proxynovaCom():
         print(_)

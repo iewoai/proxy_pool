@@ -42,6 +42,13 @@ DB_CONN = 'redis://:pwd@127.0.0.1:6379/0'
 # proxy table name
 TABLE_NAME = 'use_proxy'
 
+PROXY_HOST = 'hadoop3'
+# requests用
+PROXIES = {
+    'http': f'{PROXY_HOST}:8088',
+    'https': f'{PROXY_HOST}:8088',
+}
+
 
 # ###### config the proxy fetch function ######
 PROXY_FETCHER = [
@@ -54,7 +61,10 @@ PROXY_FETCHER = [
     "freeProxy07",
     "freeProxy08",
     "freeProxy09",
-    "freeProxy10"
+    "freeProxy10",
+    "proxyDBNet",
+    "zdayeCom",
+    "proxynovaCom"
 ]
 
 # ############# proxy validator #################
@@ -73,7 +83,7 @@ MAX_FAIL_COUNT = 0
 # MAX_FAIL_RATE = 0.1
 
 # proxyCheck时代理数量少于POOL_SIZE_MIN触发抓取
-POOL_SIZE_MIN = 20
+POOL_SIZE_MIN = 50
 
 # ############# scheduler config #################
 
