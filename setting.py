@@ -64,7 +64,7 @@ PROXY_FETCHER = [
     "freeProxy10",
     "proxyDBNet",
     "zdayeCom",
-    "proxynovaCom"
+    # "proxynovaCom"
 ]
 
 # ############# proxy validator #################

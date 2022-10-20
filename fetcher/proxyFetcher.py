@@ -226,13 +226,9 @@ class ProxyFetcher(object):
 
     @staticmethod
     def proxyDBNet():
+        c = ['', 'AR', 'BD', 'BR', 'KH', 'CA', 'CL', 'CN', 'CO', 'EC', 'EG', 'FR', 'DE', 'HK', 'IN', 'ID', 'MX', 'RU', 'SG', 'KR', 'TH', 'TR', 'UA', 'GB', 'US']
         urls = [
-            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=CN',
-            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=',
-            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=SG',
-            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=US',
-            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=CZ',
-            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=AR',
+            'http://proxydb.net/?protocol=https&anonlvl=4&min_uptime=75&max_response_time=5&country=' + i for i in c
         ]
         request = WebRequest()
 
@@ -246,33 +242,38 @@ class ProxyFetcher(object):
     def zdayeCom():
         urls = 'https://www.zdaye.com/dayProxy.html'
         request = WebRequest()
-        detail_url = 'https://www.zdaye.com' + request.get(urls, timeout=10).tree.xpath('//h3[@class="thread_title"]//a/@href')[0]
+        detail_url = 'https://www.zdaye.com' + request.get(urls, timeout=10, verify=False).tree.xpath('//h3[@class="thread_title"]//a/@href')[0]
 
-        proxy_list = request.get(detail_url, timeout=10).tree.xpath('//a[contains(@href,"/ip/CheckHttp/")]/@href')
+        proxy_list = request.get(detail_url, timeout=10, verify=False).tree.xpath('//a[contains(@href,"/ip/CheckHttp/")]/@href')
         for url in proxy_list:
             proxy = re.findall(r'(\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d+)',url)
             if proxy:
                 yield proxy[0]
 
+    # cloudflare 拦截
     # @staticmethod
-    # def freeproxyCz():
+    # def spysOne():
     #     url = "https://spys.one/free-proxy-list/CN/"
     #     request = WebRequest()
     #     r = request.get(url, timeout=10, proxies=PROXIES)
-    #     print( r.text)
+    #     print(r.text)
     #     proxies = re.findall(r"document\.write\(Base64\.decode\(\"(.*?)\"\).*?\"fport\".*?>(.*?)<", r.text)
     #     for proxy in proxies:
     #         yield proxy
     #         # yield base64.b64decode(proxy).decode()
 
-    @staticmethod
-    def proxynovaCom():
-        url = "https://www.proxynova.com/proxy-server-list/country-cn"
-        request = WebRequest()
-        r = request.get(url, timeout=10, proxies=PROXIES)
-        proxies = re.findall(r"document\.write\(\"(.*?)\"\).*?\".*?>(\d+)</", r.text.replace("\n", "").replace(" ", ""))
-        for proxy in proxies:
-            yield re.sub(r'[\"\+]', '', proxy[0]) + ":" + proxy[1]
+    # ip用js生成
+    # @staticmethod
+    # def proxynovaCom():
+    #     import js2py
+    #     url = "https://www.proxynova.com/proxy-server-list/country-cn"
+    #     request = WebRequest()
+    #     r = request.get(url, timeout=10, proxies=PROXIES)
+    #     proxies = re.findall(r"document\.write\((.*?)\)</.*?>(\d+)<", r.text.replace("\n", "").replace(" ", ""))
+    #     for proxy in proxies:
+    #         proxy_js = "var a = " + proxy[0]
+    #         print(js2py.eval_js(proxy_js))
+    #         # yield re.sub(r'[\"\+]', '', proxy[0]) + ":" + proxy[1]
 
 
     """
@@ -286,7 +287,7 @@ class ProxyFetcher(object):
 
 if __name__ == '__main__':
     p = ProxyFetcher()
-    for _ in p.proxynovaCom():
+    for _ in p.zdayeCom():
         print(_)
 
 # http://nntime.com/proxy-list-01.htm
