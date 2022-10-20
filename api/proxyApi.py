@@ -11,6 +11,7 @@
                    2016/12/04: WebApi
                    2019/08/14: 集成Gunicorn启动方式
                    2020/06/23: 新增pop接口
+                   2022/07/21: 更新count接口
 -------------------------------------------------
 """
 __author__ = 'JHao'
@@ -91,8 +92,15 @@ def delete():
 
 @app.route('/count/')
 def getCount():
-    status = proxy_handler.getCount()
-    return status
+    proxies = proxy_handler.getAll()
+    http_type_dict = {}
+    source_dict = {}
+    for proxy in proxies:
+        http_type = 'https' if proxy.https else 'http'
+        http_type_dict[http_type] = http_type_dict.get(http_type, 0) + 1
+        for source in proxy.source.split('/'):
+            source_dict[source] = source_dict.get(source, 0) + 1
+    return {"http_type": http_type_dict, "source": source_dict, "count": len(proxies)}
 
 
 def runFlask():
